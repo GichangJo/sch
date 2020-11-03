@@ -1,0 +1,134 @@
+﻿@page "/"
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Gantt
+
+
+
+<style>
+    #SGANTT {
+        position: relative;
+        top: 50px;
+    }
+
+    #SGRID {
+        position: relative;
+        top: 100px;
+    }
+</style>
+
+<SfGantt @ref="Gantt" id="SGANTT" DataSource="@ScheduleCollection" Height="450px" Width="1620px" AllowSelection="true" AllowFiltering="true">
+    <GanttTaskFields Id="ProjectId" Name="ProjectName" StartDate="StartDate" EndDate="EndDate" Duration="Duration" Progress="Progress" Child="SubTasks"></GanttTaskFields>
+    <GanttSelectionSettings Mode="Syncfusion.Blazor.Grids.SelectionMode.Row"> </GanttSelectionSettings>
+    <GanttEvents RowSelected="RowSelected" TValue="Scheduler"> </GanttEvents>
+</SfGantt>
+
+
+
+<SfGrid @ref="Grid" id="SGRID" DataSource="@ScheduleCollection" AllowSorting="true" AllowPaging="true" AllowFiltering="true">
+    <GridEvents RowSelected="GetSelectedRecords" TValue="Scheduler"> </GridEvents>
+    <GridPageSettings PageSize="5"></GridPageSettings>
+    <GridColumns>
+        <GridColumn Field="@nameof(Scheduler.ProjectId)" HeaderText="Project ID" TextAlign="TextAlign.Center" width="60"> </GridColumn>
+        <GridColumn Field="@nameof(Scheduler.ProjectName)" HeaderText="Project Name" TextAlign="TextAlign.Center" width="160"> </GridColumn>
+        <GridColumn Field="@nameof(Scheduler.Assignee)" HeaderText="Assignee" TextAlign="TextAlign.Center" width="160"> </GridColumn>
+        <GridColumn Field="@nameof(Scheduler.Milestone)" HeaderText="Milestone" TextAlign="TextAlign.Center" width="120"> </GridColumn>
+        <GridColumn Field="@nameof(Scheduler.TimeTracking)" HeaderText="Time Tracking" TextAlign="TextAlign.Center" width="100"> </GridColumn>
+        <GridColumn Field="@nameof(Scheduler.StartDate)" HeaderText="Start Date" TextAlign="TextAlign.Center" Format="d" width="160">  </GridColumn>
+        <GridColumn Field="@nameof(Scheduler.EndDate)" HeaderText="Due Date" TextAlign="TextAlign.Center" Format="d" width="160"> </GridColumn>
+        <GridColumn Field="@nameof(Scheduler.Labels)" HeaderText="Labels" TextAlign="TextAlign.Center" width="140"> </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+@code{
+
+    public SfGantt<Scheduler> Gantt;
+    SfGrid<Scheduler> Grid;
+
+
+    public void RowSelected(Syncfusion.Blazor.Gantt.RowSelectEventArgs<Scheduler> args)
+    {
+        Scheduler data = args.Data.TaskData;
+
+        if (data != null)
+        {
+            
+        }
+        else
+        {
+
+        }
+
+        this.Grid.SelectRow(args.RowIndex);
+    }
+
+    public void GetSelectedRecords(Syncfusion.Blazor.Grids.RowSelectEventArgs<Scheduler> args)
+    {
+        this.Gantt.SelectRow(args.RowIndex);
+    }
+
+
+
+    public List<Scheduler> ScheduleCollection { get; set; }
+    protected override void OnInitialized()
+    {
+        this.ScheduleCollection = GetScheduleCollection();
+    }
+
+    public class Scheduler
+    {
+        public int ProjectId { get; set; }
+        public string ProjectName { get; set; }
+        public string Assignee { get; set; }
+        public string Milestone { get; set; }
+        public string TimeTracking { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public string Labels { get; set; }
+        public string Duration { get; set; }
+        public int Progress { get; set; }
+        public List<Scheduler> SubSch { get; set; }
+
+        #region Constructors
+        public Scheduler(int projectId,
+                    string projectName,
+                    string assignee,
+                    string milestone,
+                    string timeTracking,
+                    DateTime startDate,
+                    DateTime endDate,
+                    string labels,
+                    string duration,
+                    int progress)
+        {
+            ProjectId = projectId;
+            ProjectName = projectName;
+            Assignee = assignee;
+            Milestone = milestone;
+            TimeTracking = timeTracking;
+            StartDate = startDate;
+            EndDate = endDate;
+            Labels = labels;
+            Duration = duration;
+            Progress = progress;
+        }
+        #endregion
+    }
+
+
+    public static List<Scheduler> GetScheduleCollection()
+    {
+        List<Scheduler> schedulers = new List<Scheduler>()
+        {
+            new Scheduler(1, "Name1", "조기창", "", "", new DateTime(2020,10,12), new DateTime(2020, 10, 20), "done","7", 100),
+            new Scheduler(2, "Name2", "박찬수", "", "", new DateTime(2020,10,19), new DateTime(2020, 11, 03), "doing","12", 70),
+            new Scheduler(3, "Name3", "이윤", "", "", new DateTime(2020,10,21), new DateTime(2020,11,23), "doing","24", 30),
+            new Scheduler(4, "Name4", "이윤, 조기창", "", "", new DateTime(2020,11,02), new DateTime(2020,11,13), "to do","10", 0),
+            new Scheduler(5, "Name5", "이윤, 박찬수", "", "", new DateTime(2020,11,17), new DateTime(2020,12,14), "to do","20", 0),
+            new Scheduler(6, "Name6", "조기창, 박찬수", "", "", new DateTime(2020,11,17), new DateTime(2020,12,14), "to do","20", 0),
+            new Scheduler(7, "Name7", "이윤, 조기창, 박찬수", "", "", new DateTime(2020,11,17), new DateTime(2020,12,14), "to do","20", 0),
+
+        };
+
+        return schedulers;
+    }
+}
